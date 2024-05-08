@@ -22,6 +22,7 @@ const CourseInput = props => {
     props.onAddGoal(enteredValue);
     console.log('Hello World');
     console.log('added');
+    console.log("change")
 
 
   };
