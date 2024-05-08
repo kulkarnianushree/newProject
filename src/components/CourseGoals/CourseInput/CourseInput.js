@@ -22,7 +22,7 @@ const CourseInput = props => {
     props.onAddGoal(enteredValue);
     console.log('Hello World');
     console.log('added');
-    console.log("change added")
+    console.log("change added is write")
 
 
   };
