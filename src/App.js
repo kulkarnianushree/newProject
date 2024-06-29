@@ -1,57 +1,41 @@
-import React, { useState } from 'react';
-
-import CourseGoalList from './components/CourseGoals/CourseGoalList/CourseGoalList';
-import CourseInput from './components/CourseGoals/CourseInput/CourseInput';
+import React, { useState } from "react";
+import Movies from "./component/Movies";
 import './App.css';
 
 const App = () => {
-  const [courseGoals, setCourseGoals] = useState([
-    { text: 'Do all exercises!', id: 'g1' },
-    { text: 'Finish the course!', id: 'g2' }
-  ]);
+    const [movies, setMovies] = useState([]);
+    const [isLoading, setIsLoading] = useState(false)
 
-  const addGoalHandler = enteredText => {
-    setCourseGoals(prevGoals => {
-      const updatedGoals = [...prevGoals];
-      updatedGoals.unshift({ text: enteredText, id: Math.random().toString() });
-      return updatedGoals;
-    });
-  };
+    const fetchMovieHandler = async () => {
+        setIsLoading(true)
+        try {
+            const response = await fetch('https://swapi.dev/api/films');
+            const data = await response.json();
+            const TransformedData = data.results.map(moviedata => {
+                return {
+                    id: moviedata.episode_id,
+                    title: moviedata.title,
+                    releaseDate: moviedata.release_date
+                };
+            });
+            setMovies(TransformedData);
+            setIsLoading(false)
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
-  const deleteItemHandler = goalId => {
-    setCourseGoals(prevGoals => {
-      const updatedGoals = prevGoals.filter(goal => goal.id !== goalId);
-      return updatedGoals;
-    });
-  };
-
-  let content = (
-    <p style={{ textAlign: 'center' }}>No goals found. Maybe add one?</p>
-  );
-
-  if (courseGoals.length > 0) {
-    content = (
-      <CourseGoalList items={courseGoals} onDeleteItem={deleteItemHandler} />
+    return (
+        <React.Fragment>
+            <div className="box">
+                <button className="button" onClick={fetchMovieHandler}>Fetch Movies</button>
+            </div>
+            <div>
+                {!isLoading && <Movies movie={movies} />}
+            </div>
+            {isLoading && <p> Loading...</p>}
+        </React.Fragment>
     );
-  }
-
-  return (
-    <div>
-      <section id="goal-form">
-        <CourseInput onAddGoal={addGoalHandler} />
-      </section>
-      <section id="goals">
-        {content}
-        {/* {courseGoals.length > 0 && (
-          <CourseGoalList
-            items={courseGoals}
-            onDeleteItem={deleteItemHandler}
-          />
-        ) // <p style={{ textAlign: 'center' }}>No goals found. Maybe add one?</p>
-        } */}
-      </section>
-    </div>
-  );
 };
 
 export default App;
